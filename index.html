@@ -1,0 +1,1728 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Techie Town - AI Future City</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #eff8e9;
+  color: #355747;
+}
+
+header {
+  background: #b9dfbd;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 5px solid #a3cfa9;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+header p {
+  margin-bottom: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: white;
+  padding: 12px 20px;
+  border-radius: 18px;
+  box-shadow: 0 3px 8px #cbdcc8;
+}
+
+h2 {
+  color: #4c805e;
+}
+
+.city {
+  background: #d9edc9;
+  border: 4px solid white;
+  border-radius: 25px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  text-align: center;
+}
+
+.place {
+  background: #fffdf0;
+  border-radius: 20px;
+  padding: 20px 8px;
+  font-size: 18px;
+  box-shadow: 0 3px 7px #b7d1ae;
+}
+
+.emoji {
+  font-size: 42px;
+}
+
+.panel {
+  background: white;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 22px;
+  box-shadow: 0 3px 10px #d3e3d0;
+}
+
+button {
+  border: none;
+  background: #79b98a;
+  color: white;
+  padding: 12px 18px;
+  margin: 5px;
+  border-radius: 14px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #579b6b;
+}
+
+.answer {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #e9f5e8;
+  color: #355747;
+}
+
+#message {
+  background: #f1f8e9;
+  padding: 12px;
+  border-radius: 12px;
+  min-height: 45px;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #718b77;
+}
+
+@media (max-width: 500px) {
+  header h1 {
+    font-size: 24px;
+  }
+}
+
+/* BUILDING INFORMATION WINDOW */
+.building-window {
+  position: fixed;
+  inset: 0;
+  background: rgba(35, 55, 45, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.building-window[hidden] {
+  display: none;
+}
+
+.building-content {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  background: #fffdf0;
+  border: 3px solid #a5d6a7;
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.building-content h2 {
+  color: #355747;
+}
+
+.building-content p {
+  color: #55745e;
+  line-height: 1.7;
+}
+
+.close-building {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #e98b80;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌱 TECHIE TOWN</h1>
+  <p>AI FUTURE CITY — เมืองแห่งเทคโนโลยีและจินตนาการ</p>
+</header>
+
+<section class="city-scene">
+  <div class="city-sky">
+    <span class="sun">☀️</span>
+    <span class="cloud cloud-one">☁️</span>
+    <span class="cloud cloud-two">☁️</span>
+  </div>
+
+  
+<div class="city-buildings">
+  <div class="building" onclick="openBuilding('ai')">
+    🏢<small>AI CENTER</small>
+  </div>
+
+  <div class="building" onclick="openBuilding('academy')">
+    🏫<small>AI ACADEMY</small>
+  </div>
+
+  <div class="building" onclick="openBuilding('mall')">
+    🏬<small>SMART MALL</small>
+  </div>
+
+  <div class="building" onclick="openBuilding('park')">
+    🌳<small>GREEN PARK</small>
+  </div>
+</div>
+<!-- CITY DECORATIONS -->
+
+<div id="city-decorations" class="city-decorations"
+     onclick="placeDecorationAt(event)">
+</div>
+
+<!-- DECORATION CONTROLS -->
+<div class="decoration-controls">
+  <p>🏡 เลือกของตกแต่งเมือง</p>
+
+  <button onclick="placeDecoration('🌳')">
+    🌳 วางต้นไม้
+  </button>
+
+  <button onclick="placeDecoration('🏡')">
+    🏡 วางบ้าน
+  </button>
+</div>
+<!-- PLAYER CHARACTER -->
+<div id="player-character" class="player-character">
+  🐢
+</div>
+<div class="player-controls">
+  <button
+    onpointerdown="startMoving(-1)"
+    onpointerup="stopMoving()"
+    onpointerleave="stopMoving()"
+    onpointercancel="stopMoving()"
+  >◀</button>
+
+  <button
+    onpointerdown="startMoving(1)"
+    onpointerup="stopMoving()"
+    onpointerleave="stopMoving()"
+    onpointercancel="stopMoving()"
+  >▶</button>
+
+  <button onclick="explorePlace()">🔍</button>
+</div>
+<!-- CITY STATUS -->
+<div id="solar-city-status" class="solar-city-status" hidden>
+  ☀️
+  <small>เมืองใช้พลังงานสะอาดแล้ว!</small>
+</div>
+
+<div id="ai-city-status" class="solar-city-status" hidden>
+  🤖
+  <small>AI Academy เปิดใช้งานแล้ว!</small>
+</div>
+
+<!-- CITY ROAD -->
+<div class="city-road">
+
+  <div class="traffic-light">
+    <div class="light red"></div>
+    <div class="light yellow"></div>
+    <div class="light green"></div>
+  </div>
+
+  <div class="road-sign">
+    <span>STOP</span>
+  </div>
+
+  <div class="speed-sign">
+    <span>30</span>
+    <small>KM/H</small>
+  </div>
+
+  <div class="pedestrian-sign">
+    <span>🚸</span>
+  </div>
+
+  <div class="crosswalk">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <span class="vehicle vehicle-car">🚗</span>
+<span class="vehicle vehicle-bus">🚌</span>
+<span class="vehicle vehicle-bike">🚲</span>
+</div>
+</section>
+
+<main class="container">
+
+  <section class="stats">
+    <div class="stat">🪙 เหรียญ: <b id="coins">0</b></div>
+    <div class="stat">⭐ คะแนน: <b id="score">0</b></div>
+    <div class="stat">⚡ พลังงาน: <b id="energy">0</b></div>
+  </section>
+
+  
+<h2>🗺️ สำรวจเมือง Techie Town</h2>
+
+<section class="city">
+  <div class="place" onclick="openBuilding('academy')">
+    <div class="emoji">🏫</div>
+    Smart School
+    <p>กดเพื่อเข้าโรงเรียนอัจฉริยะ</p>
+  </div>
+
+  <div class="place" onclick="openBuilding('park')">
+    <div class="emoji">🌳</div>
+    Green Park
+    <p>กดเพื่อเข้าสวนสีเขียว</p>
+  </div>
+
+  <div class="place" onclick="openBuilding('ai')">
+    <div class="emoji">🏢</div>
+    AI Center
+    <p>กดเพื่อเข้าสู่ศูนย์ AI</p>
+  </div>
+
+  <div class="place" onclick="installSolar()">
+    <div class="emoji">☀️</div>
+    Energy Station
+    <p>กดเพื่อเปิดใช้งานพลังงานสะอาด</p>
+  </div>
+</section>
+
+  <section class="panel">
+    <h2>🤖 T-BO ผู้ช่วยประจำเมือง</h2>
+    <p>สวัสดี! ฉันคือ T-BO วันนี้เราจะมาพัฒนาเมืองไปด้วยกัน</p>
+    <button onclick="talk('ai')">AI คืออะไร?</button>
+    <button onclick="talk('city')">Smart City คืออะไร?</button>
+    <p id="message">💬 T-BO พร้อมช่วยเหลือแล้ว!</p>
+  </section>
+
+  <section class="panel">
+    <h2>💡 ภารกิจ Coding & AI</h2>
+    <p><b>คำถาม:</b> Machine Learning เป็นเทคโนโลยีที่เกี่ยวข้องกับอะไร?</p>
+
+    <button class="answer" onclick="checkAnswer(true)">
+      A. การเรียนรู้จากข้อมูลของคอมพิวเตอร์
+    </button>
+
+    <button class="answer" onclick="checkAnswer(false)">
+      B. การทำอาหารด้วยเครื่องจักร
+    </button>
+
+    <button class="answer" onclick="checkAnswer(false)">
+      C. การวาดภาพด้วยกระดาษ
+    </button>
+
+    <p id="quizMessage">เลือกคำตอบที่ถูกต้องเพื่อรับคะแนน!</p>
+  </section>
+
+  <section class="panel">
+    <h2>🌞 พัฒนาเมืองของเรา</h2>
+    <p>เพิ่มพลังงานสะอาดให้เมือง เพื่ออนาคตที่ดีขึ้น</p>
+    <button onclick="addEnergy()">+ เพิ่มพลังงานสะอาด</button>
+    <button onclick="useEnergy()">⚡ ใช้พลังงาน 10 หน่วย</button>
+    <p id="energyMessage"></p>
+  </section>
+
+</main>
+
+<footer>
+  🌿 Techie Town — Learn, Create, and Build the Future
+</footer>
+
+
+<script>
+let coins = Number(localStorage.getItem("gameCoins")) || 0;
+let score = Number(localStorage.getItem("gameScore")) || 0;
+let energy = Number(localStorage.getItem("gameEnergy") ?? 100);
+let answered = false;
+
+function updateStats() {
+  document.getElementById("coins").textContent = coins;
+  document.getElementById("score").textContent = score;
+  document.getElementById("energy").textContent = energy;
+
+  localStorage.setItem("gameCoins", coins);
+  localStorage.setItem("gameScore", score);
+  localStorage.setItem("gameEnergy", energy);
+}
+
+updateStats();
+
+function talk(topic) {
+  const message = document.getElementById("message");
+
+  if (topic === "ai") {
+    message.textContent =
+      "🤖 AI คือเทคโนโลยีที่ช่วยให้คอมพิวเตอร์ทำงานบางอย่างได้อย่างชาญฉลาด";
+  } else {
+    message.textContent =
+      "🏙️ Smart City คือเมืองที่ใช้เทคโนโลยีมาช่วยพัฒนาคุณภาพชีวิตของผู้คน";
+  }
+}
+
+function checkAnswer(correct) {
+  const result = document.getElementById("quizMessage");
+
+  if (answered) {
+    result.textContent = "ภารกิจนี้ตอบไปแล้ว ลองภารกิจใหม่ในอนาคตนะ!";
+    return;
+  }
+
+  answered = true;
+
+  if (correct) {
+    score += 10;
+    coins += 5;
+    result.textContent = "🎉 ถูกต้อง! รับ 10 คะแนน และ 5 เหรียญ";
+  } else {
+    result.textContent = "ยังไม่ถูกนะ! ลองศึกษาเรื่อง Machine Learning อีกครั้ง";
+  }
+
+  updateStats();
+}
+
+function addEnergy() {
+  if (localStorage.getItem("energyBonusClaimed") === "true") {
+    document.getElementById("energyMessage").textContent =
+      "ภารกิจนี้สำเร็จแล้ว!";
+    return;
+  }
+
+  if (energy < 100) {
+    energy += 1;
+  }
+
+  coins += 2;
+  score += 5;
+
+  localStorage.setItem("energyBonusClaimed", "true");
+
+  document.getElementById("energyMessage").textContent =
+    "🌞 เยี่ยมเลย! รับรางวัล 2 เหรียญ และ 5 คะแนนแล้ว";
+
+  updateStats();
+}
+
+function useEnergy() {
+  if (energy < 10) {
+    document.getElementById("energyMessage").textContent =
+      "⚡ พลังงานไม่เพียงพอ!";
+    return;
+  }
+
+  energy -= 10;
+
+  document.getElementById("energyMessage").textContent =
+    "⚡ ใช้พลังงาน 10 หน่วยเรียบร้อยแล้ว!";
+
+  updateStats();
+}
+
+function placeDecorationAt(event) {
+  if (!selectedDecoration) {
+    alert("เลือกต้นไม้หรือบ้านก่อนนะ!");
+    return;
+  }
+
+  const area = document.getElementById("city-decorations");
+  const rect = area.getBoundingClientRect();
+
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+  const itemName = selectedDecoration === "🌳"
+    ? "ต้นไม้"
+    : "บ้าน";
+
+  const inventoryIndex = inventory.findIndex(
+    name => name.includes(itemName)
+  );
+
+  if (inventoryIndex === -1) {
+    alert("ไม่มีของชิ้นนี้ในกระเป๋าแล้ว!");
+    selectedDecoration = null;
+    return;
+  }
+
+  inventory.splice(inventoryIndex, 1);
+
+  cityDecorations.push({
+    item: selectedDecoration,
+    x: x,
+    y: y
+  });
+
+  localStorage.setItem("mallInventory", JSON.stringify(inventory));
+  localStorage.setItem("cityDecorations", JSON.stringify(cityDecorations));
+
+  selectedDecoration = null;
+  renderDecorations();
+}
+
+</script>
+
+
+<!-- Mission Center -->
+<section id="mission-center" class="mission-center">
+  <h2>🎯 Mission Center</h2>
+  <p>ทำภารกิจเพื่อช่วยพัฒนาเมือง Techie Town!</p>
+
+  <!-- Mission 1 -->
+  <div class="mission-card">
+    <h3>🌳 ภารกิจที่ 1: เมืองสีเขียว</h3>
+    <p>ช่วยเมืองของเราหันมาใช้พลังงานสะอาด!</p>
+
+    <div class="game-scene">
+      🏙️ 🏡 🌳 🌳
+      <p>เมือง Techie Town ต้องการพลังงานสะอาด</p>
+      <div class="solar-panel">☀️ 🔋</div>
+    </div>
+
+    <button id="start-green" onclick="installSolar()">
+      ☀️ ติดตั้งแผงโซลาร์เซลล์
+    </button>
+
+    <p id="mission1-status">สถานะ: ยังไม่สำเร็จ</p>
+  </div>
+
+  <!-- Mission 2 -->
+  <div class="mission-card">
+    <h3>🤖 ภารกิจที่ 2: AI Academy</h3>
+    <p>มาทดสอบความรู้เกี่ยวกับ AI กัน!</p>
+
+    <button id="start-ai" onclick="startAI()">
+      🎮 เริ่มภารกิจ
+    </button>
+
+    <div id="ai-quiz" hidden>
+      <h3>🤖 T-BO ถามว่า...</h3>
+      <p>AI ย่อมาจากอะไร?</p>
+
+      <button onclick="answerAI('A')">
+        A. ปัญญาประดิษฐ์
+      </button>
+
+      <button onclick="answerAI('B')">
+        B. พลังงานแสงอาทิตย์
+      </button>
+
+      <button onclick="answerAI('C')">
+        C. ระบบขนส่ง
+      </button>
+
+      <p id="ai-feedback"></p>
+    </div>
+
+    <p id="mission2-status">สถานะ: ยังไม่สำเร็จ</p>
+  </div>
+
+  <div class="mission-reward">
+    🪙 เหรียญรางวัล:
+    <span id="mission-coins">0</span>
+  </div>
+<button onclick="restartGame()" class="restart-button">
+  🔄 เริ่มเกมใหม่
+</button>
+</section>
+
+<style>
+.mission-center {
+  background: #eaffdf;
+  border: 3px solid #a5d6a7;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 25px 0;
+  color: #315c3b;
+}
+
+.mission-card {
+  background: #fffdf0;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 12px 0;
+}
+
+.game-scene {
+  background: #dff5e5;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  margin: 15px 0;
+  font-size: 25px;
+}
+
+.game-scene p {
+  font-size: 16px;
+}
+
+.solar-panel {
+  font-size: 35px;
+  padding: 10px;
+}
+
+.mission-card button {
+  background: #77bd83;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.mission-card button:hover {
+  background: #559e69;
+}
+
+.mission-reward {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+#ai-quiz {
+  background: #e9f5ff;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+#ai-quiz button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+}
+
+/* TECHIE TOWN - CITY SCENE */
+.city-scene {
+  width: 100%;
+  min-height: 320px;
+  margin: 20px auto;
+  padding: 20px;
+  background: linear-gradient(#c9eee0, #f8f1d9);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+.player-character {
+  position: absolute;
+  left: 8%;
+  bottom: 65px;
+  font-size: 48px;
+  z-index: 10;
+  transition: left 0.3s ease;
+  cursor: pointer;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 4px 3px rgba(53, 87, 71, 0.25));
+}
+.player-character.walking {
+  animation: bunnyHop 0.25s ease-in-out;
+}
+
+@keyframes bunnyHop {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(8deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+.player-character {
+  position: absolute;
+  left: 8%;
+  bottom: 65px;
+  font-size: 38px;
+  z-index: 10;
+  transition: left 0.3s ease;
+  cursor: pointer;
+}
+
+/* ปุ่มควบคุมกระต่าย */
+.player-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 15px;
+  z-index: 20;
+  display: flex;
+  gap: 10px;
+}
+
+.player-controls button {
+  width: 48px;
+  height: 45px;
+  border: 2px solid #a5d6a7;
+  border-radius: 14px;
+  background: #fffdf0;
+  color: #355747;
+  font-size: 24px;
+  cursor: pointer;
+}
+.city-sky {
+  height: 100px;
+  position: relative;
+}
+
+.sun {
+  position: absolute;
+  right: 40px;
+  top: 5px;
+  font-size: 42px;
+}
+
+.cloud {
+  position: absolute;
+  font-size: 38px;
+}
+
+.cloud-one {
+  left: 15%;
+  top: 15px;
+}
+
+.cloud-two {
+  left: 55%;
+  top: 45px;
+}
+
+.city-buildings {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: 14px;
+  min-height: 155px;
+  position: relative;
+  z-index: 2;
+}
+
+.building {
+  min-width: 0;
+  min-height: 135px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  background: linear-gradient(
+    180deg,
+    #fffef7,
+    #dff4e8
+  );
+
+  border: 3px solid #83bd9a;
+  border-bottom: 8px solid #6fa985;
+  border-radius: 18px 18px 5px 5px;
+
+  padding: 12px 5px;
+  font-size: 42px;
+  text-align: center;
+
+  box-shadow: 0 7px 0 rgba(53, 87, 71, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.building:hover {
+  transform: translateY(-6px);
+}
+
+.building small {
+  display: block;
+  font-size: 10px;
+  color: #355747;
+  font-weight: bold;
+}
+
+.city-decorations {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 18px;
+  min-height: 100px;
+  margin-top: 12px;
+  padding: 12px;
+  position: relative;
+  z-index: 2;
+  font-size: 36px;
+}
+
+.decoration-item {
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.decoration-item:hover {
+  transform: translateY(-8px) scale(1.15);
+}
+
+.decoration-item {
+  display: inline-block;
+  animation: decorationPop 0.4s ease;
+  cursor: default;
+}
+
+@keyframes decorationPop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.building {
+  background: #fffdf0;
+  border: 3px solid #83bd9a;
+  border-radius: 12px 12px 4px 4px;
+  padding: 15px 8px;
+  font-size: 38px;
+  text-align: center;
+  flex: 1;
+}
+
+.building small {
+  display: block;
+  font-size: 10px;
+  color: #355747;
+  font-weight: bold;
+}
+
+
+
+
+/* MISSION CENTER - GAME DESIGN */
+
+.mission-center {
+  background: linear-gradient(135deg, #eaffdf, #e1f5ed);
+  border: 2px solid #a5d6a7;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 6px 15px rgba(53, 87, 71, 0.10);
+}
+
+.mission-center > h2 {
+  color: #315c3b;
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.mission-card {
+  border: 2px solid #c5e6c9;
+  border-left: 7px solid #77bd83;
+  box-shadow: 0 5px 12px rgba(53, 87, 71, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mission-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(53, 87, 71, 0.15);
+}
+
+.mission-card h3 {
+  color: #355747;
+}
+
+.game-scene {
+  background: linear-gradient(#c9eee0, #f8f1d9);
+  border: 2px solid #b5ddc2;
+  min-height: 150px;
+}
+
+.solar-panel {
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 12px;
+}
+
+.mission-card button {
+  box-shadow: 0 3px 0 #559e69;
+  transition: 0.2s;
+}
+
+.mission-card button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+#ai-quiz {
+  border: 2px solid #b8d9ed;
+}
+
+.mission-reward {
+  background: #fff4c7;
+  border: 2px solid #f0d889;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+}
+
+.restart-button {
+  background: #e8a7a7;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 20px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+/* MISSION CENTER - TWO COLUMN LAYOUT */
+
+.mission-center {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mission-center > h2,
+.mission-center > p,
+.mission-center > .mission-reward,
+.mission-center > .restart-button {
+  grid-column: 1 / -1;
+}
+
+.mission-card {
+  margin: 0;
+  min-width: 0;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width: 700px) {
+  .mission-center {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* SOLAR CITY STATUS */
+
+.solar-city-status {
+  background: linear-gradient(135deg, #fff4c7, #e1f5d9);
+  border: 2px solid #a5d6a7;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 12px 0;
+  text-align: center;
+  font-size: 32px;
+  animation: solarAppear 0.6s ease;
+}
+
+.solar-city-status small {
+  display: block;
+  color: #47734f;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.solar-city-status p {
+  font-size: 15px;
+  color: #355747;
+  margin-bottom: 0;
+}
+
+@keyframes solarAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}/* FUTURE CITY ROAD - TWO WAY */
+
+.city-road {
+  background: #747d79;
+  border-top: 5px solid #fffdf0;
+  border-bottom: 5px solid #fffdf0;
+  margin: 18px -20px -20px;
+  height: 110px;
+  box-sizing: border-box;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* เส้นแบ่งเลนกลางถนน */
+.city-road::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 3px dashed #fff4bd;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* รถทุกคัน */
+.vehicle {
+  position: absolute;
+  font-size: 28px;
+  line-height: 1;
+  z-index: 3;
+}
+
+/* รถยนต์ วิ่งไปทางขวา */
+.vehicle-car {
+  top: 8px;
+  left: -12%;
+  animation: move-right 14s linear infinite;
+  animation-delay: -3s;
+}
+
+/* รถบัส วิ่งสวนกลับทางซ้าย */
+.vehicle-bus {
+  bottom: 8px;
+  right: -12%;
+  animation: move-left 16s linear infinite;
+  animation-delay: -6s;
+}
+
+/* จักรยาน วิ่งไปทางขวา */
+.vehicle-bike {
+  top: 8px;
+  left: -12%;
+  animation: move-right 18s linear infinite;
+  animation-delay: -10s;
+}
+
+/* เคลื่อนที่ไปทางขวา */
+@keyframes move-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(120vw); }
+}
+
+/* เคลื่อนที่ไปทางซ้าย */
+@keyframes move-left {
+  from { transform: translateX(0) scaleX(-1); }
+  to { transform: translateX(-120vw) scaleX(-1); }
+}
+
+/* TRAFFIC LIGHT */
+.traffic-light {
+  position: absolute;
+  left: 12px;
+  top: 5px;
+  z-index: 6;
+  display: flex;
+  gap: 5px;
+  background: #35413c;
+  padding: 7px;
+  border-radius: 15px;
+}
+
+.light {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  opacity: 0.25;
+}
+
+.light.red {
+  background: #ff4242;
+  animation: redSignal 6s infinite;
+}
+
+.light.yellow {
+  background: #ffdf45;
+  animation: yellowSignal 6s infinite;
+}
+
+.light.green {
+  background: #42df78;
+  animation: greenSignal 6s infinite;
+}
+
+@keyframes redSignal {
+  0%, 30% { opacity: 1; box-shadow: 0 0 10px #ff4242; }
+  35%, 100% { opacity: 0.25; box-shadow: none; }
+}
+
+@keyframes yellowSignal {
+  0%, 35% { opacity: 0.25; }
+  40%, 50% { opacity: 1; box-shadow: 0 0 10px #ffdf45; }
+  55%, 100% { opacity: 0.25; }
+}
+
+@keyframes greenSignal {
+  0%, 50% { opacity: 0.25; }
+  55%, 90% { opacity: 1; box-shadow: 0 0 10px #42df78; }
+  95%, 100% { opacity: 0.25; }
+}
+
+/* STOP SIGN */
+.road-sign {
+  position: absolute;
+  right: 3%;
+  top: 5px;
+  z-index: 6;
+}
+
+.road-sign span {
+  display: block;
+  background: #e94b4b;
+  color: white;
+  border: 3px solid white;
+  outline: 2px solid #e94b4b;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+/* SPEED SIGN */
+.speed-sign {
+  position: absolute;
+  right: 13%;
+  top: 5px;
+  z-index: 6;
+  width: 42px;
+  height: 42px;
+  background: white;
+  border: 3px solid #e94b4b;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #e94b4b;
+  font-weight: bold;
+}
+
+.speed-sign span {
+  font-size: 15px;
+  line-height: 16px;
+}
+
+.speed-sign small {
+  font-size: 7px;
+}
+
+/* PEDESTRIAN SIGN */
+.pedestrian-sign {
+  position: absolute;
+  right: 25%;
+  top: 5px;
+  z-index: 6;
+}
+
+.pedestrian-sign span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: #fff4c7;
+  border: 3px solid #e5a52e;
+  border-radius: 8px;
+  font-size: 25px;
+}
+
+/* CROSSWALK */
+.crosswalk {
+  position: absolute;
+  right: 38%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.crosswalk span {
+  width: 9px;
+  height: 36px;
+  background: #fffdf0;
+  border-radius: 3px;
+}
+/* CLICKABLE CITY PLACES */
+.place {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.place:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 7px 15px rgba(53, 87, 71, 0.15);
+}
+/* FIX BUILDING CONTENT DISPLAY */
+#ai-chat[hidden],
+#mall-shop[hidden] {
+  display: none !important;
+}
+
+#ai-chat:not([hidden]),
+#mall-shop:not([hidden]) {
+  display: block !important;
+}
+</style>
+
+<script>
+const resetKey = "techieTownMissionResetV2";
+
+if (localStorage.getItem(resetKey) !== "done") {
+  localStorage.removeItem("completedMissions");
+  localStorage.removeItem("missionCoins");
+  localStorage.removeItem("greenMissionDone");
+
+  localStorage.setItem(resetKey, "done");
+}
+let missionCoins =
+  Number(localStorage.getItem("missionCoins")) || 0;
+
+// เพิ่มตรงนี้
+
+let inventory = JSON.parse(
+  localStorage.getItem("mallInventory") || "[]"
+);
+
+let cityDecorations = JSON.parse(
+  localStorage.getItem("cityDecorations") || "[]"
+).map(item => {
+  if (typeof item === "string") {
+    return { item: item, x: 50, y: 50 };
+  }
+  return item;
+});
+
+let selectedDecoration = null;
+
+let completedMissions = JSON.parse(
+  localStorage.getItem("completedMissions") || "[]"
+);
+
+
+
+// แก้ข้อมูลเก่าที่สถานะภารกิจ 2 สำเร็จ
+// แต่เหรียญยังไม่ครบ 40
+if (
+  completedMissions.includes(2) &&
+  missionCoins < 40
+) {
+  completedMissions = completedMissions.filter(
+    id => id !== 2
+  );
+
+  localStorage.setItem(
+    "completedMissions",
+    JSON.stringify(completedMissions)
+  );
+}
+
+// อัปเดตจำนวนเหรียญ
+function updateCoins() {
+  document.getElementById("mission-coins").textContent =
+    missionCoins;
+
+  localStorage.setItem("missionCoins", missionCoins);
+}
+function buyItem(cost, itemName) {
+  const message = document.getElementById("mall-message");
+
+  if (missionCoins < cost) {
+    message.textContent = "เหรียญไม่พอ! ทำภารกิจเพื่อรับเหรียญเพิ่มนะ 💰";
+    return;
+  }
+
+  missionCoins -= cost;
+  updateCoins();
+
+
+  inventory.push(itemName);
+localStorage.setItem("mallInventory", JSON.stringify(inventory));
+renderDecorations();
+  message.textContent = "ซื้อ " + itemName + " สำเร็จแล้ว! 🎉";
+}
+
+function placeDecoration(item) {
+  if (inventory.length === 0) {
+    alert("กระเป๋าของตกแต่งยังว่างอยู่!");
+    return;
+  }
+
+  const itemName = item === "🌳" ? "ต้นไม้" : "บ้าน";
+
+  const owned = inventory.some(name => name.includes(itemName));
+
+  if (!owned) {
+    alert("ยังไม่มีสินค้านี้ในกระเป๋า ลองซื้อที่ SMART MALL ก่อนนะ!");
+    return;
+  }
+
+  selectedDecoration = item;
+
+  alert("เลือก " + itemName + " แล้ว! คลิกตำแหน่งที่ต้องการวางในเมืองได้เลย 🌿");
+}
+
+
+
+function removeDecoration(index) {
+  if (index < 0 || index >= cityDecorations.length) return;
+
+  const decoration = cityDecorations.splice(index, 1)[0];
+
+  const itemName = decoration.item === "🌳"
+    ? "ต้นไม้ตกแต่ง"
+    : "บ้านอัจฉริยะ";
+
+  inventory.push(itemName);
+
+  localStorage.setItem(
+    "cityDecorations",
+    JSON.stringify(cityDecorations)
+  );
+
+  localStorage.setItem(
+    "mallInventory",
+    JSON.stringify(inventory)
+  );
+
+  renderDecorations();
+
+  alert("เก็บของกลับเข้ากระเป๋าแล้ว! 🎒");
+}
+
+
+function showInventory() {
+  const list = document.getElementById("inventory-list");
+
+  const treeCount = inventory.filter(name =>
+    name.includes("ต้นไม้")
+  ).length;
+
+  const houseCount = inventory.filter(name =>
+    name.includes("บ้าน")
+  ).length;
+
+  if (inventory.length === 0) {
+    list.textContent = "🎒 ว่างเปล่า 🌱";
+  } else {
+    list.textContent =
+      "🌳 × " + treeCount + "     🏡 × " + houseCount;
+  }
+}
+
+
+function renderDecorations() {
+  const area = document.getElementById("city-decorations");
+
+  if (!area) return;
+
+  area.innerHTML = "";
+
+  cityDecorations.forEach((decoration, index) => {
+    const item = document.createElement("span");
+
+    item.className = "decoration-item";
+    item.textContent = decoration.item;
+
+    item.style.position = "absolute";
+    item.style.left = decoration.x + "%";
+    item.style.top = decoration.y + "%";
+    item.style.transform = "translate(-50%, -50%)";
+
+    item.title = "กดเพื่อเก็บกลับเข้ากระเป๋า";
+
+    item.onclick = function (event) {
+      event.stopPropagation();
+      removeDecoration(index);
+    };
+
+    area.appendChild(item);
+  });
+}
+
+
+// อัปเดตสถานะภารกิจ
+function updateMissions() {
+  [1, 2].forEach(id => {
+    if (completedMissions.includes(id)) {
+      document.getElementById(
+        "mission" + id + "-status"
+      ).textContent = "สถานะ: สำเร็จแล้ว! 🎉";
+    }
+  });
+
+  if (completedMissions.includes(1)) {
+    document.getElementById("start-green").disabled = true;
+    document.getElementById("start-green").textContent =
+      "ติดตั้งสำเร็จแล้ว ✓";
+  }
+
+  if (completedMissions.includes(2)) {
+    document.getElementById("start-ai").disabled = true;
+    document.getElementById("start-ai").textContent =
+      "เรียนรู้สำเร็จแล้ว ✓";
+
+    document.getElementById("ai-quiz").hidden = true;
+  }
+}
+
+// รับรางวัล
+function rewardMission(id) {
+  if (completedMissions.includes(id)) return;
+
+  completedMissions.push(id);
+
+  localStorage.setItem(
+    "completedMissions",
+    JSON.stringify(completedMissions)
+  );
+
+  missionCoins += 20;
+
+  updateCoins();
+  updateMissions();
+
+  alert("ยินดีด้วย! คุณได้รับ 20 เหรียญ 🪙");
+}
+
+// ภารกิจ 1: ติดตั้งพลังงานสะอาด
+
+function installSolar() {
+  if (completedMissions.includes(1)) return;
+
+  localStorage.setItem("greenMissionDone", "true");
+
+  const solarStatus = document.getElementById("solar-city-status");
+  solarStatus.hidden = false;
+
+  alert("☀️ ติดตั้งแผงโซลาร์เซลล์สำเร็จ!");
+
+  rewardMission(1);
+}
+
+// ตรวจสอบข้อมูลพลังงานสะอาดเมื่อเปิดเกม
+if (localStorage.getItem("greenMissionDone") === "true") {
+  const solarStatus = document.getElementById("solar-city-status");
+
+  if (solarStatus) {
+    solarStatus.hidden = false;
+  }
+}
+
+
+// ภารกิจ 2: เริ่มตอบคำถาม
+function startAI() {
+  if (completedMissions.includes(2)) return;
+
+  document.getElementById("ai-quiz").hidden = false;
+
+  document.getElementById("ai-feedback").textContent =
+    "เลือกคำตอบที่ถูกต้องได้เลย!";
+}
+
+// ตรวจคำตอบ AI
+
+function answerAI(answer) {
+  const feedback = document.getElementById("ai-feedback");
+
+  if (answer === "A") {
+    feedback.textContent = "ถูกต้อง! เก่งมาก 🤖🎉";
+
+    localStorage.setItem("aiMissionDone", "true");
+
+    const aiStatus = document.getElementById("ai-city-status");
+    aiStatus.hidden = false;
+
+    rewardMission(2);
+    updateMissions();
+  } else {
+    feedback.textContent = "ยังไม่ถูกนะ ลองเลือกใหม่อีกครั้ง!";
+  }
+}
+
+
+// โหลดข้อมูลเมื่อเปิดเกม
+updateCoins();
+updateMissions();
+renderDecorations();
+function restartGame() {
+  const confirmRestart = confirm(
+    "ต้องการเริ่มเกมใหม่ตั้งแต่ต้นใช่ไหม?"
+  );
+
+  if (!confirmRestart) return;
+
+  localStorage.removeItem("missionCoins");
+  localStorage.removeItem("completedMissions");
+  localStorage.removeItem("greenMissionDone");
+  localStorage.removeItem("energyBonusClaimed");
+localStorage.removeItem("gameCoins");
+localStorage.removeItem("gameScore");
+localStorage.removeItem("gameEnergy");
+  location.reload();
+}
+// OPEN BUILDING WINDOW
+function openBuilding(type) {
+  const windowBox = document.getElementById("building-window");
+  const title = document.getElementById("building-title");
+  const description = document.getElementById("building-description");
+
+  const buildings = {
+    ai: {
+      title: "🤖 AI CENTER",
+      description: "ยินดีต้อนรับสู่ศูนย์ AI! มาสำรวจเทคโนโลยีอัจฉริยะของเมืองกัน"
+    },
+    academy: {
+      title: "🏫 AI ACADEMY",
+      description: "ยินดีต้อนรับสู่โรงเรียน AI! มาเรียนรู้เรื่องเทคโนโลยีกัน"
+    },
+    mall: {
+      title: "🏬 SMART MALL",
+      description: "ยินดีต้อนรับสู่ห้างอัจฉริยะ! พื้นที่แห่งการช้อปปิ้งของเมือง"
+    },
+    park: {
+      title: "🌳 GREEN PARK",
+      description: "ยินดีต้อนรับสู่สวนสีเขียว! พักผ่อนและดูแลสิ่งแวดล้อมกัน"
+    }
+  };
+
+  title.textContent = buildings[type].title;
+  description.textContent = buildings[type].description;
+  if (type === "ai") {
+  description.textContent +=
+    " 🤖 ลองถาม AI ได้เลย! AI พร้อมช่วยตอบคำถามของคุณ";
+}
+  windowBox.hidden = false;
+const aiChat = document.getElementById("ai-chat");
+aiChat.hidden = type !== "ai";
+const mallShop = document.getElementById("mall-shop");
+mallShop.hidden = type !== "mall";
+}
+
+function askAI() {
+  const question = document.getElementById("ai-question").value.trim();
+  const answer = document.getElementById("ai-answer");
+  const q = question.toLowerCase();
+
+  if (question === "") {
+    answer.textContent = "ลองพิมพ์คำถามก่อนนะ 😊";
+    return;
+  }
+
+  if (q.includes("ai") || question.includes("เอไอ") || question.includes("ปัญญาประดิษฐ์")) {
+    answer.textContent = "AI คือเทคโนโลยีที่ช่วยให้คอมพิวเตอร์ทำงานอย่างชาญฉลาด 🤖";
+
+  } else if (question.includes("เทคโนโลยี")) {
+    answer.textContent = "เทคโนโลยีช่วยให้ชีวิตสะดวกและรวดเร็วขึ้น!";
+
+  } else if (question.includes("สวัสดี")) {
+    answer.textContent = "สวัสดี! ยินดีต้อนรับสู่ Techie Town 🌿";
+
+  } else if (question.includes("ทำอะไรได้")) {
+    answer.textContent = "AI ช่วยตอบคำถาม วิเคราะห์ข้อมูล แปลภาษา และสร้างสรรค์ไอเดียได้! 🌟";
+
+  } else if (question.includes("ใครสร้าง")) {
+    answer.textContent = "AI ถูกพัฒนาโดยนักวิจัยและวิศวกรจากหลายองค์กร 🤖";
+
+  } else if (question.includes("ประโยชน์")) {
+    answer.textContent = "AI ช่วยให้การเรียน การทำงาน และชีวิตประจำวันสะดวกขึ้น 💚";
+      } else if (question.includes("สิ่งแวดล้อม")) {
+    answer.textContent = "เราสามารถช่วยโลกได้ด้วยการประหยัดพลังงาน ลดขยะ และปลูกต้นไม้ 🌳";
+
+  } else if (question.includes("เมืองอัจฉริยะ")) {
+    answer.textContent = "เมืองอัจฉริยะใช้เทคโนโลยีช่วยพัฒนาการเดินทาง พลังงาน และคุณภาพชีวิต 🏙️";
+  } else {
+    answer.textContent = "น่าสนใจมาก! ลองถามฉันเกี่ยวกับ AI หรือเทคโนโลยีดูนะ 💡";
+  }
+}
+// CLOSE BUILDING WINDOW
+function closeBuilding() {
+  document.getElementById("building-window").hidden = true;
+}
+function movePlayer(direction) {
+  const player = document.getElementById("player-character");
+  const scene = document.querySelector(".city-scene");
+
+  if (!player || !scene) return;
+
+  const currentLeft = player.offsetLeft;
+  const maxLeft = scene.clientWidth - player.offsetWidth;
+
+  let newLeft = currentLeft + (direction * 30);
+
+  newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+
+  player.style.left = newLeft + "px";
+
+  if (direction < 0) {
+    player.style.transform = "scaleX(-1)";
+  } else {
+    player.style.transform = "scaleX(1)";
+  }
+
+  player.classList.remove("walking");
+  void player.offsetWidth;
+  player.classList.add("walking");
+
+  setTimeout(() => {
+    player.classList.remove("walking");
+  }, 250);
+}
+function explorePlace() {
+  const player = document.getElementById("player-character");
+  const scene = document.querySelector(".city-scene");
+  const buildings = document.querySelectorAll(".city-buildings .building");
+
+  if (!player || !scene || buildings.length === 0) return;
+
+  const playerRect = player.getBoundingClientRect();
+  const sceneRect = scene.getBoundingClientRect();
+
+  const playerCenter =
+    playerRect.left + playerRect.width / 2 - sceneRect.left;
+
+  let nearest = null;
+  let nearestDistance = Infinity;
+
+  buildings.forEach(building => {
+    const rect = building.getBoundingClientRect();
+    const buildingCenter =
+      rect.left + rect.width / 2 - sceneRect.left;
+
+    const distance = Math.abs(playerCenter - buildingCenter);
+
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearest = building;
+    }
+  });
+
+  if (!nearest || nearestDistance > 100) {
+    alert("🐢 เดินเข้าใกล้อาคารก่อนนะ!");
+    return;
+  }
+
+  nearest.click();
+}
+let playerMoveInterval = null;
+
+function startMoving(direction) {
+  stopMoving();
+
+  movePlayer(direction);
+
+  playerMoveInterval = setInterval(() => {
+    movePlayer(direction);
+  }, 120);
+}
+
+function stopMoving() {
+  if (playerMoveInterval !== null) {
+    clearInterval(playerMoveInterval);
+    playerMoveInterval = null;
+  }
+}
+
+</script>
+<!-- BUILDING INFORMATION WINDOW -->
+<div id="building-window" class="building-window" hidden>
+  <div class="building-content">
+    <button class="close-building" onclick="closeBuilding()">✖</button>
+
+    <h2 id="building-title">🏢 AI CENTER</h2>
+
+    <p id="building-description">
+      ยินดีต้อนรับสู่เมือง Techie Town!
+    <p>
+  
+<div id="ai-chat" hidden>
+  <input
+    type="text"
+    id="ai-question"
+    placeholder="พิมพ์คำถามถึง AI..."
+  >
+
+  <button onclick="askAI()">
+    🤖 ถาม AI
+  </button>
+
+  <p id="ai-answer"></p>
+</div>
+
+<div id="mall-shop" hidden>
+  <h3>🛍️ SMART MALL SHOP</h3>
+
+  <p>เลือกซื้อสินค้าในเมืองของเรา!</p>
+<p id="mall-message"></p>
+  <div>
+    <span>🌱 ต้นไม้ตกแต่ง - 10 เหรียญ</span>
+    <button onclick="buyItem(10, 'ต้นไม้ตกแต่ง')">
+      ซื้อ
+    </button>
+  </div>
+
+  <div>
+    <span>🏡 บ้านอัจฉริยะ - 20 เหรียญ</span>
+    <button onclick="buyItem(20, 'บ้านอัจฉริยะ')">
+      ซื้อ
+    </button>
+  </div>
+
+  <button onclick="showInventory()" class="bag-button" title="เปิดกระเป๋าสินค้า">
+    🎒
+  </button>
+
+  <p id="inventory-list"></p>
+</div>
+
+<div>
+<body>
+
+<html>
