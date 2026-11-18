@@ -1270,18 +1270,18 @@ function updateCoins() {
 function buyItem(cost, itemName) {
   const message = document.getElementById("mall-message");
 
-  if (missionCoins < cost) {
+  if (coins < cost) {
     message.textContent = "เหรียญไม่พอ! ทำภารกิจเพื่อรับเหรียญเพิ่มนะ 💰";
     return;
   }
 
-  missionCoins -= cost;
+  coins -= cost;
   updateCoins();
 
-fff
   inventory.push(itemName);
-localStorage.setItem("mallInventory", JSON.stringify(inventory));
-renderDecorations();
+  localStorage.setItem("mallInventory", JSON.stringify(inventory));
+
+  showInventory();
   message.textContent = "ซื้อ " + itemName + " สำเร็จแล้ว! 🎉";
 }
 
