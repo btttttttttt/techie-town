@@ -1246,21 +1246,6 @@ let completedMissions = JSON.parse(
 
 
 
-// แก้ข้อมูลเก่าที่สถานะภารกิจ 2 สำเร็จ
-// แต่เหรียญยังไม่ครบ 40
-if (
-  completedMissions.includes(2) &&
-  missionCoins < 40
-) {
-  completedMissions = completedMissions.filter(
-    id => id !== 2
-  );
-
-  localStorage.setItem(
-    "completedMissions",
-    JSON.stringify(completedMissions)
-  );
-}
 
 // อัปเดตจำนวนเหรียญให้ตรงกันทั้งเกม
 function updateCoins() {
