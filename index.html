@@ -386,7 +386,7 @@ footer {
 let coins = Number(localStorage.getItem("gameCoins")) || 0;
 let score = Number(localStorage.getItem("gameScore")) || 0;
 let energy = Number(localStorage.getItem("gameEnergy") ?? 100);
-let answered = false;
+let answered = localStorage.getItem("quizAnswered") === "true";
 
 function updateStats() {
   document.getElementById("coins").textContent = coins;
@@ -421,6 +421,7 @@ function checkAnswer(correct) {
   }
 
   answered = true;
+localStorage.setItem("quizAnswered", "true");
 
   if (correct) {
     score += 10;
