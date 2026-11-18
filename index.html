@@ -1262,12 +1262,10 @@ if (
   );
 }
 
-// อัปเดตจำนวนเหรียญ
+// อัปเดตจำนวนเหรียญให้ตรงกันทั้งเกม
 function updateCoins() {
-  document.getElementById("mission-coins").textContent =
-    missionCoins;
-
-  localStorage.setItem("missionCoins", missionCoins);
+  document.getElementById("mission-coins").textContent = coins;
+  updateStats();
 }
 function buyItem(cost, itemName) {
   const message = document.getElementById("mall-message");
@@ -1280,7 +1278,7 @@ function buyItem(cost, itemName) {
   missionCoins -= cost;
   updateCoins();
 
-
+fff
   inventory.push(itemName);
 localStorage.setItem("mallInventory", JSON.stringify(inventory));
 renderDecorations();
