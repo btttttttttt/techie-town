@@ -1460,15 +1460,15 @@ if (localStorage.getItem("greenMissionDone") === "true") {
 }
 
 
+
 // ภารกิจ 2: เริ่มตอบคำถาม
 function startAI() {
-  if (completedMissions.includes(2)) return;
-
   document.getElementById("ai-quiz").hidden = false;
 
   document.getElementById("ai-feedback").textContent =
     "เลือกคำตอบที่ถูกต้องได้เลย!";
 }
+
 
 // ตรวจคำตอบ AI
 
