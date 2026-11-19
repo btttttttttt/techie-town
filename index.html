@@ -238,8 +238,10 @@ footer {
 <div id="player-character" class="player-character">
   🐢
 </div>
+
 <div class="player-controls">
   <button
+    type="button"
     onpointerdown="startMoving(-1)"
     onpointerup="stopMoving()"
     onpointerleave="stopMoving()"
@@ -247,14 +249,19 @@ footer {
   >◀</button>
 
   <button
+    type="button"
     onpointerdown="startMoving(1)"
     onpointerup="stopMoving()"
     onpointerleave="stopMoving()"
     onpointercancel="stopMoving()"
   >▶</button>
 
-  <button onclick="explorePlace()">🔍</button>
+  <button
+    type="button"
+    onclick="explorePlace()"
+  >🔍</button>
 </div>
+
 <!-- CITY STATUS -->
 <div id="solar-city-status" class="solar-city-status" hidden>
   ☀️
