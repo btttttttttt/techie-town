@@ -24,7 +24,7 @@ header {
   text-align: center;
   border-bottom: 5px solid #a3cfa9;
 }
-  
+
 header h1 {
   margin: 0;
   font-size: 30px;
@@ -386,7 +386,7 @@ footer {
 let coins = Number(localStorage.getItem("gameCoins")) || 0;
 let score = Number(localStorage.getItem("gameScore")) || 0;
 let energy = Number(localStorage.getItem("gameEnergy") ?? 100);
-let answered = localStorage.getItem("quizAnswered") === "true";
+let answered = false;
 
 function updateStats() {
   document.getElementById("coins").textContent = coins;
@@ -421,7 +421,6 @@ function checkAnswer(correct) {
   }
 
   answered = true;
-localStorage.setItem("quizAnswered", "true");
 
   if (correct) {
     score += 10;
@@ -1218,10 +1217,14 @@ const resetKey = "techieTownMissionResetV2";
 
 if (localStorage.getItem(resetKey) !== "done") {
   localStorage.removeItem("completedMissions");
+  localStorage.removeItem("missionCoins");
   localStorage.removeItem("greenMissionDone");
 
   localStorage.setItem(resetKey, "done");
 }
+let missionCoins =
+  Number(localStorage.getItem("missionCoins")) || 0;
+
 // เพิ่มตรงนี้
 
 let inventory = JSON.parse(
@@ -1245,27 +1248,44 @@ let completedMissions = JSON.parse(
 
 
 
+// แก้ข้อมูลเก่าที่สถานะภารกิจ 2 สำเร็จ
+// แต่เหรียญยังไม่ครบ 40
+if (
+  completedMissions.includes(2) &&
+  missionCoins < 40
+) {
+  completedMissions = completedMissions.filter(
+    id => id !== 2
+  );
 
-// อัปเดตจำนวนเหรียญให้ตรงกันทั้งเกม
+  localStorage.setItem(
+    "completedMissions",
+    JSON.stringify(completedMissions)
+  );
+}
+
+// อัปเดตจำนวนเหรียญ
 function updateCoins() {
-  document.getElementById("mission-coins").textContent = coins;
-  updateStats();
+  document.getElementById("mission-coins").textContent =
+    missionCoins;
+
+  localStorage.setItem("missionCoins", missionCoins);
 }
 function buyItem(cost, itemName) {
   const message = document.getElementById("mall-message");
 
-  if (coins < cost) {
+  if (missionCoins < cost) {
     message.textContent = "เหรียญไม่พอ! ทำภารกิจเพื่อรับเหรียญเพิ่มนะ 💰";
     return;
   }
 
-  coins -= cost;
+  missionCoins -= cost;
   updateCoins();
 
-  inventory.push(itemName);
-  localStorage.setItem("mallInventory", JSON.stringify(inventory));
 
-  showInventory();
+  inventory.push(itemName);
+localStorage.setItem("mallInventory", JSON.stringify(inventory));
+renderDecorations();
   message.textContent = "ซื้อ " + itemName + " สำเร็จแล้ว! 🎉";
 }
 
@@ -1364,6 +1384,11 @@ function renderDecorations() {
     };
 
     area.appendChild(item);
+    if (completedMissions.includes(2)) {
+  document.getElementById("start-ai").disabled = false;
+  document.getElementById("start-ai").textContent =
+    "🔄 เล่นภารกิจอีกครั้ง";
+}
   });
 }
 
@@ -1385,12 +1410,10 @@ function updateMissions() {
   }
 
   if (completedMissions.includes(2)) {
-    document.getElementById("start-ai").disabled = true;
-    document.getElementById("start-ai").textContent =
-      "เรียนรู้สำเร็จแล้ว ✓";
-
-    document.getElementById("ai-quiz").hidden = true;
-  }
+  document.getElementById("start-ai").disabled = false;
+  document.getElementById("start-ai").textContent =
+    "🔄 เล่นภารกิจอีกครั้ง";
+}
 }
 
 // รับรางวัล
@@ -1404,7 +1427,7 @@ function rewardMission(id) {
     JSON.stringify(completedMissions)
   );
 
-  coins += 20;
+  missionCoins += 20;
 
   updateCoins();
   updateMissions();
@@ -1439,6 +1462,8 @@ if (localStorage.getItem("greenMissionDone") === "true") {
 
 // ภารกิจ 2: เริ่มตอบคำถาม
 function startAI() {
+  if (completedMissions.includes(2)) return;
+
   document.getElementById("ai-quiz").hidden = false;
 
   document.getElementById("ai-feedback").textContent =
@@ -1477,6 +1502,7 @@ function restartGame() {
 
   if (!confirmRestart) return;
 
+  localStorage.removeItem("missionCoins");
   localStorage.removeItem("completedMissions");
   localStorage.removeItem("greenMissionDone");
   localStorage.removeItem("energyBonusClaimed");
