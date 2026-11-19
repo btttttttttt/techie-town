@@ -1534,18 +1534,17 @@ updateMissions();
 renderDecorations();
 function restartGame() {
   const confirmRestart = confirm(
-    "ต้องการเริ่มเกมใหม่ตั้งแต่ต้นใช่ไหม?"
+    "ต้องการเริ่มเกมใหม่ใช่ไหม? บ้านและของตกแต่งที่ซื้อไว้จะยังคงอยู่"
   );
 
   if (!confirmRestart) return;
 
-  localStorage.removeItem("missionCoins");
   localStorage.removeItem("completedMissions");
   localStorage.removeItem("greenMissionDone");
   localStorage.removeItem("energyBonusClaimed");
-localStorage.removeItem("gameCoins");
-localStorage.removeItem("gameScore");
-localStorage.removeItem("gameEnergy");
+  localStorage.removeItem("gameScore");
+  localStorage.removeItem("gameEnergy");
+
   location.reload();
 }
 // OPEN BUILDING WINDOW
