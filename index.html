@@ -1472,13 +1472,28 @@ function startAI() {
 // ตรวจคำตอบ AI
 
 
+
 function answerAI(answer) {
   const feedback = document.getElementById("ai-feedback");
 
-  if (completedMissions.includes(2)) {
-    feedback.textContent = "ภารกิจนี้สำเร็จแล้ว! 🎉";
-    return;
+  if (answer === "A") {
+    feedback.textContent = "ถูกต้อง! เก่งมาก 🤖🎉";
+
+    localStorage.setItem("aiMissionDone", "true");
+
+    const aiStatus = document.getElementById("ai-city-status");
+    aiStatus.hidden = false;
+
+    // รับรางวัลเฉพาะครั้งแรก
+    if (!completedMissions.includes(2)) {
+      rewardMission(2);
+    }
+
+    updateMissions();
+  } else {
+    feedback.textContent = "ยังไม่ถูกนะ ลองเลือกใหม่อีกครั้ง!";
   }
+}
 
   if (answer === "A") {
     feedback.textContent = "ถูกต้อง! เก่งมาก 🤖🎉";
@@ -1492,7 +1507,7 @@ function answerAI(answer) {
     updateMissions();
   } else {
     feedback.textContent = "ยังไม่ถูกนะ ลองเลือกใหม่อีกครั้ง!";
-  }
+  
 }
 
 
