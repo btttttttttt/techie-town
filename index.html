@@ -1384,13 +1384,10 @@ function renderDecorations() {
     };
 
     area.appendChild(item);
-    if (completedMissions.includes(2)) {
-  document.getElementById("start-ai").disabled = false;
-  document.getElementById("start-ai").textContent =
-    "🔄 เล่นภารกิจอีกครั้ง";
-}
+    
   });
 }
+
 
 
 // อัปเดตสถานะภารกิจ
@@ -1409,11 +1406,13 @@ function updateMissions() {
       "ติดตั้งสำเร็จแล้ว ✓";
   }
 
-  if (completedMissions.includes(2)) {
   document.getElementById("start-ai").disabled = false;
+
   document.getElementById("start-ai").textContent =
-    "🔄 เล่นภารกิจอีกครั้ง";
-}
+    completedMissions.includes(2)
+      ? "🔄 เล่นภารกิจอีกครั้ง"
+      : "เริ่มภารกิจ AI";
+
 }
 
 // รับรางวัล
@@ -1472,8 +1471,14 @@ function startAI() {
 
 // ตรวจคำตอบ AI
 
+
 function answerAI(answer) {
   const feedback = document.getElementById("ai-feedback");
+
+  if (completedMissions.includes(2)) {
+    feedback.textContent = "ภารกิจนี้สำเร็จแล้ว! 🎉";
+    return;
+  }
 
   if (answer === "A") {
     feedback.textContent = "ถูกต้อง! เก่งมาก 🤖🎉";
@@ -1489,6 +1494,7 @@ function answerAI(answer) {
     feedback.textContent = "ยังไม่ถูกนะ ลองเลือกใหม่อีกครั้ง!";
   }
 }
+
 
 
 // โหลดข้อมูลเมื่อเปิดเกม
