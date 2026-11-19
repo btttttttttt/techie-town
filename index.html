@@ -411,23 +411,21 @@ function talk(topic) {
       "🏙️ Smart City คือเมืองที่ใช้เทคโนโลยีมาช่วยพัฒนาคุณภาพชีวิตของผู้คน";
   }
 }
-
 function checkAnswer(correct) {
   const result = document.getElementById("quizMessage");
 
   if (answered) {
-    result.textContent = "ภารกิจนี้ตอบไปแล้ว ลองภารกิจใหม่ในอนาคตนะ!";
+    result.textContent = "ภารกิจนี้ตอบถูกแล้ว!";
     return;
   }
 
-  answered = true;
-
   if (correct) {
+    answered = true;
     score += 10;
     coins += 5;
     result.textContent = "🎉 ถูกต้อง! รับ 10 คะแนน และ 5 เหรียญ";
   } else {
-    result.textContent = "ยังไม่ถูกนะ! ลองศึกษาเรื่อง Machine Learning อีกครั้ง";
+    result.textContent = "ยังไม่ถูกนะ! ลองอีกครั้งได้เลย";
   }
 
   updateStats();
